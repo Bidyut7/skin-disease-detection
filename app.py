@@ -7,7 +7,6 @@ import io
 
 app = Flask(__name__)
 
-# Load the model
 model_path = '/Users/shreysharma/Desktop/improved_skin_detection.h5'
 try:
     model = tf.keras.models.load_model(model_path)
@@ -22,11 +21,11 @@ def process_image(image_bytes):
     try:
         image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
         image = image.resize((IMG_SIZE, IMG_SIZE))
-        image_array = np.array(image) / 255.0  # Normalize
-        image_array = np.expand_dims(image_array, axis=0)  # Add batch dimension
+        image_array = np.array(image) / 255.0 
+        image_array = np.expand_dims(image_array, axis=0)  
         return image_array
     except Exception as e:
-        print(f"❌ Error processing image: {e}")
+        print(f"Error processing image: {e}")
         return None
 
 #@app.route("/", methods=["GET"])
@@ -34,7 +33,7 @@ def process_image(image_bytes):
     #return jsonify({"message": "Welcome to Skin Disease Prediction API"}), 200
 @app.route('/')
 def home():
-    return render_template('index.html')  # This serves the HTML file
+    return render_template('index.html') 
 
 
 @app.route("/predict", methods=["POST"])
@@ -52,9 +51,9 @@ def predict():
         return jsonify({"error": "Image processing failed"}), 500
 
     predictions = model.predict(processed_image)
-    predicted_class = int(np.argmax(predictions))  # Get highest probability class
+    predicted_class = int(np.argmax(predictions))  
 
-    class_names = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc']  # Replace with actual class names
+    class_names = ['akiec', 'bcc', 'bkl', 'df', 'mel', 'nv', 'vasc'] 
     predicted_disease = class_names[predicted_class]
 
     return jsonify({"prediction": predicted_disease}), 200
